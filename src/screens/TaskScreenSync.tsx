@@ -1,11 +1,13 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {useAuth, useUser} from '@realm/react';
 import {TaskScreen} from './TaskScreen';
 import {colors} from '../styles/colors';
+import {CartList} from '../components/CartList';
 
 export function TaskScreenSync() {
   const user = useUser();
+  const [page, setpage] = useState<number>(1);
   const {logOut} = useAuth();
   return (
     <View style={styles.container}>
@@ -17,7 +19,37 @@ export function TaskScreenSync() {
           <Text style={styles.authButtonText}>Log Out</Text>
         </Pressable>
       </View>
-      <TaskScreen userId={user.id} />
+      <View style={styles.header}>
+        <Pressable
+          style={[
+            styles.authButton,
+            page === 1 && {borderColor: colors.purple},
+          ]}
+          onPress={() => setpage(1)}>
+          <Text
+            style={[
+              styles.authButtonText,
+              page === 1 && {color: colors.purple},
+            ]}>
+            Products
+          </Text>
+        </Pressable>
+        <Pressable
+          style={[
+            styles.authButton,
+            page === 0 && {borderColor: colors.purple},
+          ]}
+          onPress={() => setpage(0)}>
+          <Text
+            style={[
+              styles.authButtonText,
+              page === 0 && {color: colors.purple},
+            ]}>
+            Cart
+          </Text>
+        </Pressable>
+      </View>
+      {page ? <TaskScreen userId={user.id} /> : <CartList userId={user.id} />}
     </View>
   );
 }

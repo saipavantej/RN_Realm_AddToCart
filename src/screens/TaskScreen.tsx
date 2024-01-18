@@ -1,7 +1,5 @@
 import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
-import {AddTaskForm} from '../components/AddTaskForm';
-import {SwitchPanel} from '../components/SwitchPanel';
 import {TaskList} from '../components/TaskList';
 import {colors} from '../styles/colors';
 import {useTaskManager} from '../hooks/useTaskManager';
@@ -11,38 +9,20 @@ type TaskScreenProps = {
 };
 
 export function TaskScreen({userId}: TaskScreenProps) {
-  const {
-    tasks,
-    addTask,
-    toggleTaskStatus,
-    deleteTask,
-    showCompleted,
-    toggleShowCompleted,
-  } = useTaskManager(userId);
+  const {items, addToCart} = useTaskManager(userId);
 
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <AddTaskForm onSubmit={addTask} />
-        {tasks.length === 0 ? (
-          <Text>no Tasks avalible !!</Text>
+        {items.length === 0 ? (
+          <Text>no items avalible !!</Text>
         ) : (
-          <TaskList
-            tasks={tasks}
-            onToggleTaskStatus={toggleTaskStatus}
-            onDeleteTask={deleteTask}
-          />
+          <TaskList items={items} onAddToCart={addToCart} />
         )}
       </View>
-      <SwitchPanel
-        label="Show Completed"
-        value={showCompleted}
-        onValueChange={toggleShowCompleted}
-      />
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -50,6 +30,5 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: 25,
   },
 });

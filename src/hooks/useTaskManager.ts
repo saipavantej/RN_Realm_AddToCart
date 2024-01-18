@@ -1,60 +1,47 @@
-import {useCallback, useState} from 'react';
+import {useCallback} from 'react';
 import {useQuery, useRealm} from '@realm/react';
+import {Items} from '../models/Items';
+import {Cart} from '../models/Cart';
 
-import {Task} from '../models/Task';
-
-export function useTaskManager(userId = 'SYNC_DISABLED') {
+export function useTaskManager(user_id = 'SYNC_DISABLED') {
   const realm = useRealm();
-  const [showCompleted, setShowCompleted] = useState(true);
-  const tasks = useQuery(
-    Task,
-    collection =>
-      showCompleted
-        ? collection.sorted('createdAt')
-        : collection.filtered('isComplete == false').sorted('createdAt'),
-    [showCompleted],
-  );
 
-  const addTask = useCallback(
-    (description: string) => {
-      if (!description) {
-        return;
-      }
+  const items = useQuery(Items);
+
+  const addToCart = useCallback(
+    (data: any) => {
       realm.write(() => {
-        realm.create(Task, {description, userId});
+        realm.create(Cart, {
+          user_id,
+          name: data.name,
+          price: data.price,
+          image_url: data.image_url,
+        });
       });
     },
-    [realm, userId],
+    [realm, user_id],
   );
 
-  const toggleTaskStatus = useCallback(
-    (task: Task) => {
-      realm.write(() => {
-        task.isComplete = !task.isComplete;
-      });
-    },
-    [realm],
+  const cart = useQuery(Cart, collection =>
+    collection.filtered('user_id == $0', user_id),
   );
 
-  const deleteTask = useCallback(
-    (task: Task) => {
+  const removeFromCart = useCallback(
+    (item: Cart) => {
       realm.write(() => {
-        realm.delete(task);
+        const taskToDelete = realm.objectForPrimaryKey('Cart', item._id);
+        if (taskToDelete) {
+          realm.delete(taskToDelete);
+        }
       });
     },
     [realm],
   );
-
-  const toggleShowCompleted = useCallback(() => {
-    setShowCompleted(!showCompleted);
-  }, [showCompleted]);
 
   return {
-    tasks,
-    addTask,
-    toggleTaskStatus,
-    deleteTask,
-    showCompleted,
-    toggleShowCompleted,
+    items,
+    cart,
+    addToCart,
+    removeFromCart,
   };
 }

@@ -1,3 +1,3 @@
-import {Task} from './Task';
-
-export const schemas = [Task];
+import {Items} from './Items';
+import {Cart} from './Cart';
+export const schemas = [Items, Cart];

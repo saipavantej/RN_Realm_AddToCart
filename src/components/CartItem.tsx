@@ -2,13 +2,13 @@ import React, {memo} from 'react';
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
 
 import {colors} from '../styles/colors';
-import {Items} from '../models/Items';
+import {Cart} from '../models/Cart';
 type TaskItemProps = {
-  item: Items;
-  onAdd: (item: any) => void;
+  item: Cart;
+  onRemove: (item: any) => void;
 };
 
-export const TaskItem = memo<TaskItemProps>(({item, onAdd}) => {
+export const CartItem = memo<TaskItemProps>(({item, onRemove}) => {
   return (
     <View style={[styles.task]}>
       <Image
@@ -23,17 +23,13 @@ export const TaskItem = memo<TaskItemProps>(({item, onAdd}) => {
           {`₹${item.price}`}
         </Text>
       </View>
-      <Pressable
-        accessibilityLabel="Delete task"
-        onPress={() =>
-          onAdd({
-            name: item.name,
-            image_url: item.image_url,
-            price: item.price,
-          })
-        }
-        style={styles.addButton}>
-        <Text style={styles.addIcon}>+</Text>
+      <View style={styles.descriptionContainer}>
+        <Text numberOfLines={1} style={[styles.description]}>
+          {item.quantity}
+        </Text>
+      </View>
+      <Pressable onPress={() => onRemove(item)} style={styles.addButton}>
+        <Text style={styles.addIcon}>-</Text>
       </Pressable>
     </View>
   );
@@ -90,7 +86,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderRadius: 30,
     borderColor: colors.white,
-    backgroundColor: colors.purple,
+    backgroundColor: colors.red,
   },
 
   addIcon: {

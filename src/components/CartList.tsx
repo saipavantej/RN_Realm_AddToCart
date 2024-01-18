@@ -1,23 +1,22 @@
 import React from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
-import type Realm from 'realm';
-import {TaskItem} from './TaskItem';
-import {Items} from '../models/Items';
+import {CartItem} from './CartItem';
+import {useTaskManager} from '../hooks/useTaskManager';
 
 type TaskListProps = {
-  items: Realm.Results<Items>;
-  onAddToCart: (item: any) => void;
+  userId?: string;
 };
 
-export function TaskList({items, onAddToCart}: TaskListProps) {
+export function CartList({userId}: TaskListProps) {
+  const {cart, removeFromCart} = useTaskManager(userId);
   return (
     <View style={styles.listContainer}>
       <FlatList
         contentContainerStyle={{paddingHorizontal: 20}}
-        data={items}
+        data={cart}
         keyExtractor={item => item._id.toString()}
         renderItem={({item: data}) => (
-          <TaskItem item={data} onAdd={onAddToCart} />
+          <CartItem item={data} onRemove={removeFromCart} />
         )}
       />
     </View>
